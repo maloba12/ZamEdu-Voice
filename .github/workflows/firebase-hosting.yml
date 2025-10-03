@@ -2,9 +2,13 @@ name: Deploy to Firebase Hosting
 
 on:
   push:
-    branches: [main]
+    branches: [temp-branch]  # Changed from main to temp-branch
   pull_request:
-    branches: [main]
+    branches: [temp-branch]  # Changed from main to temp-branch
+
+env:
+  FIREBASE_PROJECT_ID: zamedu-voice
+  FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
 jobs:
   build_and_deploy:
@@ -15,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'  # Updated to LTS version
           
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
@@ -26,4 +30,9 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           channelId: live
-          projectId: zamedu-voice
+          projectId: ${{ env.FIREBASE_PROJECT_ID }}
+          
+      - name: Verify Deployment
+        run: |
+          echo "Deployment to Firebase Hosting completed!"
+          echo "Your site should be available at: https://${{ env.FIREBASE_PROJECT_ID }}.web.app"
