@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - ZamEdu Voice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --copper-red: #B87333;
+            --victoria-blue: #4A90E2;
+            --savanna-green: #7CB342;
+            --earth-brown: #8D6E63;
+            --sunset-orange: #FF8A65;
+            --cloud-white: #FAFAFA;
+            --charcoal: #424242;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--cloud-white) 0%, #F5F5F5 100%);
+            color: var(--charcoal);
+        }
+        
+        .hero-title {
+            font-family: 'Zilla Slab', serif;
+            font-weight: 700;
+        }
+        
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(141, 110, 99, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(141, 110, 99, 0.2);
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 179, 66, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(124, 179, 66, 0.2);
+        }
+        
+        .setting-item {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .cultural-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B87333' fill-opacity='0.03'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .avatar-upload input[type=file] {
+            display: none;
+        }
+        
+        .avatar-upload label {
+            cursor: pointer;
+            display: block;
+        }
+        
+        .avatar-upload:hover .avatar-overlay {
+            opacity: 1;
+        }
+        
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--savanna-green);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, var(--copper-red), var(--sunset-orange));
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto;
+            box-shadow: 0 4px 16px rgba(184, 115, 51, 0.3);
+        }
+        
+        .progress-bar {
+            background: rgba(124, 179, 66, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, var(--savanna-green), var(--victoria-blue));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="cultural-pattern">
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-copper-red to-sunset-orange rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">ZV</span>
+                        </div>
+                        <span class="hero-title text-xl text-charcoal">ZamEdu Voice</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-charcoal font-medium hover:text-copper-red transition-colors">Home</a>
+                    <a href="education.html" class="text-charcoal font-medium hover:text-copper-red transition-colors">Education</a>
+                    <a href="location.html" class="text-charcoal font-medium hover:text-copper-red transition-colors">Location</a>
+                    <a href="#" class="text-copper-red font-medium">Profile</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select id="language-selector" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-copper-red">
+                        <option value="en">English</option>
+                        <option value="bem">Bemba</option>
+                        <option value="nya">Nyanja</option>
+                        <option value="toi">Tonga</option>
+                        <option value="loz">Lozi</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-16 bg-gradient-to-br from-victoria-blue/10 to-savanna-green/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="hero-title text-5xl text-charcoal mb-4">
+                    <span id="typed-profile"></span>
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Personalize your learning experience, manage preferences, and track your educational journey.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Overview -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-4 gap-8">
+                <!-- Profile Card -->
+                <div class="lg:col-span-1">
+                    <div class="profile-card p-6 rounded-xl text-center">
+                        <div class="avatar-upload mb-4">
+                            <img id="user-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" 
+                                 alt="User Avatar" class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white shadow-lg">
+                            <div class="avatar-overlay">
+                                <span class="text-sm">Change</span>
+                            </div>
+                            <input type="file" id="avatar-input" accept="image/*">
+                        </div>
+                        
+                        <h2 class="hero-title text-2xl text-charcoal mb-2" id="user-name">ZamEdu User</h2>
+                        <p class="text-gray-600 mb-4" id="user-email">user@zamedu.zm</p>
+                        
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Member since:</span>
+                                <span class="font-medium" id="member-since">Jan 2024</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Learning streak:</span>
+                                <span class="font-medium text-savanna-green" id="learning-streak">0 days</span>
+                            </div>
+                        </div>
+                        
+                        <button id="edit-profile-btn" class="w-full mt-4 px-4 py-2 bg-copper-red text-white rounded-lg hover:bg-orange-600 transition-colors">
+                            Edit Profile
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats and Progress -->
+                <div class="lg:col-span-3">
+                    <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="stats-card p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">📚</div>
+                            <div class="hero-title text-2xl text-charcoal mb-1" id="total-questions">0</div>
+                            <p class="text-sm text-gray-600">Questions Asked</p>
+                        </div>
+                        
+                        <div class="stats-card p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">🏆</div>
+                            <div class="hero-title text-2xl text-charcoal mb-1" id="achievements-count">0</div>
+                            <p class="text-sm text-gray-600">Achievements</p>
+                        </div>
+                        
+                        <div class="stats-card p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">⏱️</div>
+                            <div class="hero-title text-2xl text-charcoal mb-1" id="study-time">0h</div>
+                            <p class="text-sm text-gray-600">Study Time</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Progress Chart -->
+                    <div class="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/50 p-6 mb-8">
+                        <h3 class="hero-title text-xl text-charcoal mb-4">Learning Progress</h3>
+                        <div id="progress-chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements -->
+    <section class="py-12 bg-white/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="hero-title text-3xl text-charcoal mb-8 text-center">Your Achievements</h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="achievement-badge mb-4">
+                        🎯
+                    </div>
+                    <h3 class="font-semibold text-charcoal mb-1">First Question</h3>
+                    <p class="text-sm text-gray-600">Asked your first question</p>
+                    <div class="progress-bar h-2 mt-3">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center opacity-50">
+                    <div class="achievement-badge mb-4 bg-gray-400">
+                        📚
+                    </div>
+                    <h3 class="font-semibold text-charcoal mb-1">Knowledge Seeker</h3>
+                    <p class="text-sm text-gray-600">Ask 10 questions</p>
+                    <div class="progress-bar h-2 mt-3">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center opacity-50">
+                    <div class="achievement-badge mb-4 bg-gray-400">
+                        🗣️
+                    </div>
+                    <h3 class="font-semibold text-charcoal mb-1">Voice Master</h3>
+                    <p class="text-sm text-gray-600">Use voice search 20 times</p>
+                    <div class="progress-bar h-2 mt-3">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center opacity-50">
+                    <div class="achievement-badge mb-4 bg-gray-400">
+                        🔥
+                    </div>
+                    <h3 class="font-semibold text-charcoal mb-1">Streak Master</h3>
+                    <p class="text-sm text-gray-600">7-day learning streak</p>
+                    <div class="progress-bar h-2 mt-3">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="hero-title text-3xl text-charcoal mb-8">Settings & Preferences</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Voice & Language Settings -->
+                <div class="space-y-6">
+                    <div class="setting-item p-6 rounded-xl">
+                        <h3 class="font-semibold text-charcoal mb-4">Voice & Language</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Preferred Language</h4>
+                                    <p class="text-sm text-gray-600">Choose your primary language</p>
+                                </div>
+                                <select id="pref-language" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                    <option value="en">English</option>
+                                    <option value="bem">Bemba</option>
+                                    <option value="nya">Nyanja</option>
+                                    <option value="toi">Tonga</option>
+                                    <option value="loz">Lozi</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Voice Recognition</h4>
+                                    <p class="text-sm text-gray-600">Enable voice commands</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="voice-recognition" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Text-to-Speech</h4>
+                                    <p class="text-sm text-gray-600">Read responses aloud</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="text-to-speech" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Settings -->
+                    <div class="setting-item p-6 rounded-xl">
+                        <h3 class="font-semibold text-charcoal mb-4">Privacy & Data</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Location Services</h4>
+                                    <p class="text-sm text-gray-600">Allow location access</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="location-services">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Usage Analytics</h4>
+                                    <p class="text-sm text-gray-600">Help improve the app</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="usage-analytics" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Chat History</h4>
+                                    <p class="text-sm text-gray-600">Save conversation history</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="chat-history" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accessibility Settings -->
+                <div class="space-y-6">
+                    <div class="setting-item p-6 rounded-xl">
+                        <h3 class="font-semibold text-charcoal mb-4">Accessibility</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">High Contrast</h4>
+                                    <p class="text-sm text-gray-600">Increase text contrast</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="high-contrast">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Large Text</h4>
+                                    <p class="text-sm text-gray-600">Increase font size</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="large-text">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Reduced Motion</h4>
+                                    <p class="text-sm text-gray-600">Minimize animations</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="reduced-motion">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Preferences -->
+                    <div class="setting-item p-6 rounded-xl">
+                        <h3 class="font-semibold text-charcoal mb-4">Learning Preferences</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Auto-Save Progress</h4>
+                                    <p class="text-sm text-gray-600">Save learning automatically</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="auto-save" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Difficulty Level</h4>
+                                    <p class="text-sm text-gray-600">Adjust content complexity</p>
+                                </div>
+                                <select id="difficulty-level" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-charcoal">Study Reminders</h4>
+                                    <p class="text-sm text-gray-600">Daily learning notifications</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="study-reminders">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 mt-8 justify-center">
+                <button id="save-settings" class="px-6 py-3 bg-savanna-green text-white rounded-lg hover:bg-green-600 transition-colors font-medium">
+                    Save Settings
+                </button>
+                <button id="export-data" class="px-6 py-3 bg-victoria-blue text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                    Export Data
+                </button>
+                <button id="clear-data" class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium">
+                    Clear All Data
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-charcoal text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-copper-red to-sunset-orange rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">ZV</span>
+                    </div>
+                    <span class="hero-title text-xl">ZamEdu Voice</span>
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Empowering Zambian education through voice technology and AI assistance
+                </p>
+                <p class="text-sm text-gray-500">
+                    © 2024 ZamEdu Voice. Built for the Zambian community, powered by global innovation.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Profile Interface
+        class ProfileInterface {
+            constructor() {
+                this.userData = this.loadUserData();
+                this.settings = this.loadSettings();
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupTypewriter();
+                this.setupEventListeners();
+                this.loadUserProfile();
+                this.initializeProgressChart();
+                this.updateStats();
+            }
+            
+            setupTypewriter() {
+                new Typed('#typed-profile', {
+                    strings: [
+                        'Your Profile',
+                        'Lupako Lwenu',
+                        'Musoro Wako',
+                        'Litaba Tsa Hau'
+                    ],
+                    typeSpeed: 80,
+                    backSpeed: 50,
+                    backDelay: 2000,
+                    loop: true,
+                    showCursor: true,
+                    cursorChar: '|'
+                });
+            }
+            
+            setupEventListeners() {
+                // Avatar upload
+                document.getElementById('avatar-input').addEventListener('change', (e) => {
+                    this.handleAvatarUpload(e);
+                });
+                
+                document.querySelector('.avatar-upload label').addEventListener('click', () => {
+                    document.getElementById('avatar-input').click();
+                });
+                
+                // Profile edit
+                document.getElementById('edit-profile-btn').addEventListener('click', () => {
+                    this.editProfile();
+                });
+                
+                // Settings
+                document.getElementById('save-settings').addEventListener('click', () => {
+                    this.saveSettings();
+                });
+                
+                document.getElementById('export-data').addEventListener('click', () => {
+                    this.exportData();
+                });
+                
+                document.getElementById('clear-data').addEventListener('click', () => {
+                    this.clearData();
+                });
+                
+                // Settings change handlers
+                document.querySelectorAll('input, select').forEach(input => {
+                    input.addEventListener('change', () => {
+                        this.updateSetting(input.id, input.type === 'checkbox' ? input.checked : input.value);
+                    });
+                });
+            }
+            
+            loadUserData() {
+                return {
+                    name: localStorage.getItem('userName') || 'ZamEdu User',
+                    email: localStorage.getItem('userEmail') || 'user@zamedu.zm',
+                    avatar: localStorage.getItem('userAvatar') || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face',
+                    memberSince: localStorage.getItem('memberSince') || 'Jan 2024',
+                    learningStreak: parseInt(localStorage.getItem('learningStreak') || '0'),
+                    totalQuestions: parseInt(localStorage.getItem('questionsAsked') || '0'),
+                    achievements: parseInt(localStorage.getItem('achievements') || '0'),
+                    studyTime: parseInt(localStorage.getItem('studyTime') || '0')
+                };
+            }
+            
+            loadSettings() {
+                return {
+                    language: localStorage.getItem('preferredLanguage') || 'en',
+                    voiceRecognition: localStorage.getItem('voiceRecognition') !== 'false',
+                    textToSpeech: localStorage.getItem('textToSpeech') !== 'false',
+                    locationServices: localStorage.getItem('locationServices') === 'true',
+                    usageAnalytics: localStorage.getItem('usageAnalytics') !== 'false',
+                    chatHistory: localStorage.getItem('chatHistory') !== 'false',
+                    highContrast: localStorage.getItem('highContrast') === 'true',
+                    largeText: localStorage.getItem('largeText') === 'true',
+                    reducedMotion: localStorage.getItem('reducedMotion') === 'true',
+                    autoSave: localStorage.getItem('autoSave') !== 'false',
+                    difficultyLevel: localStorage.getItem('difficultyLevel') || 'intermediate',
+                    studyReminders: localStorage.getItem('studyReminders') === 'true'
+                };
+            }
+            
+            loadUserProfile() {
+                // Update profile information
+                document.getElementById('user-name').textContent = this.userData.name;
+                document.getElementById('user-email').textContent = this.userData.email;
+                document.getElementById('user-avatar').src = this.userData.avatar;
+                document.getElementById('member-since').textContent = this.userData.memberSince;
+                document.getElementById('learning-streak').textContent = `${this.userData.learningStreak} days`;
+                
+                // Load settings
+                document.getElementById('pref-language').value = this.settings.language;
+                document.getElementById('voice-recognition').checked = this.settings.voiceRecognition;
+                document.getElementById('text-to-speech').checked = this.settings.textToSpeech;
+                document.getElementById('location-services').checked = this.settings.locationServices;
+                document.getElementById('usage-analytics').checked = this.settings.usageAnalytics;
+                document.getElementById('chat-history').checked = this.settings.chatHistory;
+                document.getElementById('high-contrast').checked = this.settings.highContrast;
+                document.getElementById('large-text').checked = this.settings.largeText;
+                document.getElementById('reduced-motion').checked = this.settings.reducedMotion;
+                document.getElementById('auto-save').checked = this.settings.autoSave;
+                document.getElementById('difficulty-level').value = this.settings.difficultyLevel;
+                document.getElementById('study-reminders').checked = this.settings.studyReminders;
+            }
+            
+            updateStats() {
+                document.getElementById('total-questions').textContent = this.userData.totalQuestions;
+                document.getElementById('achievements-count').textContent = this.userData.achievements;
+                document.getElementById('study-time').textContent = `${this.userData.studyTime}h`;
+            }
+            
+            initializeProgressChart() {
+                const chartDom = document.getElementById('progress-chart');
+                const myChart = echarts.init(chartDom);
+                
+                // Generate sample data for the last 7 days
+                const dates = [];
+                const questions = [];
+                const studyTime = [];
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    questions.push(Math.floor(Math.random() * 10) + 1);
+                    studyTime.push(Math.floor(Math.random() * 3) + 1);
+                }
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        }
+                    },
+                    legend: {
+                        data: ['Questions Asked', 'Study Time (hours)']
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: dates
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: 'Questions Asked',
+                            type: 'line',
+                            data: questions,
+                            smooth: true,
+                            itemStyle: {
+                                color: '#7CB342'
+                            }
+                        },
+                        {
+                            name: 'Study Time (hours)',
+                            type: 'bar',
+                            data: studyTime,
+                            itemStyle: {
+                                color: '#4A90E2'
+                            }
+                        }
+                    ]
+                };
+                
+                myChart.setOption(option);
+                
+                // Make chart responsive
+                window.addEventListener('resize', () => {
+                    myChart.resize();
+                });
+            }
+            
+            handleAvatarUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const avatarData = e.target.result;
+                        document.getElementById('user-avatar').src = avatarData;
+                        localStorage.setItem('userAvatar', avatarData);
+                        this.userData.avatar = avatarData;
+                        this.showNotification('Avatar updated successfully!', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            editProfile() {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="hero-title text-xl text-charcoal">Edit Profile</h3>
+                            <button class="close-modal text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input type="text" id="edit-name" value="${this.userData.name}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-red">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="edit-email" value="${this.userData.email}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-red">
+                            </div>
+                            <div class="flex space-x-3 pt-4">
+                                <button id="save-profile" class="flex-1 px-4 py-2 bg-savanna-green text-white rounded-lg hover:bg-green-600 transition-colors">
+                                    Save Changes
+                                </button>
+                                <button class="cancel-edit flex-1 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Event handlers
+                modal.querySelector('.close-modal').addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+                
+                modal.querySelector('.cancel-edit').addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+                
+                modal.querySelector('#save-profile').addEventListener('click', () => {
+                    const newName = modal.querySelector('#edit-name').value.trim();
+                    const newEmail = modal.querySelector('#edit-email').value.trim();
+                    
+                    if (newName && newEmail) {
+                        this.userData.name = newName;
+                        this.userData.email = newEmail;
+                        
+                        localStorage.setItem('userName', newName);
+                        localStorage.setItem('userEmail', newEmail);
+                        
+                        document.getElementById('user-name').textContent = newName;
+                        document.getElementById('user-email').textContent = newEmail;
+                        
+                        this.showNotification('Profile updated successfully!', 'success');
+                        document.body.removeChild(modal);
+                    }
+                });
+                
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                });
+            }
+            
+            updateSetting(key, value) {
+                this.settings[key] = value;
+                localStorage.setItem(key, value.toString());
+                
+                // Apply settings immediately
+                this.applySettings();
+            }
+            
+            applySettings() {
+                // Apply language setting
+                if (this.settings.language && window.zamEduVoice) {
+                    window.zamEduVoice.currentLanguage = this.settings.language;
+                }
+                
+                // Apply accessibility settings
+                if (this.settings.highContrast) {
+                    document.body.classList.add('high-contrast');
+                } else {
+                    document.body.classList.remove('high-contrast');
+                }
+                
+                if (this.settings.largeText) {
+                    document.body.classList.add('large-text');
+                } else {
+                    document.body.classList.remove('large-text');
+                }
+                
+                if (this.settings.reducedMotion) {
+                    document.body.classList.add('reduced-motion');
+                } else {
+                    document.body.classList.remove('reduced-motion');
+                }
+            }
+            
+            saveSettings() {
+                // Save all settings to localStorage
+                Object.keys(this.settings).forEach(key => {
+                    localStorage.setItem(key, this.settings[key].toString());
+                });
+                
+                this.applySettings();
+                this.showNotification('Settings saved successfully!', 'success');
+                
+                if (window.zamEduVoice) {
+                    window.zamEduVoice.speak('Your settings have been saved.');
+                }
+            }
+            
+            exportData() {
+                const exportData = {
+                    userData: this.userData,
+                    settings: this.settings,
+                    progress: JSON.parse(localStorage.getItem('userProgress') || '[]'),
+                    chatHistory: localStorage.getItem('chatHistory'),
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `zamedu-data-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                this.showNotification('Data exported successfully!', 'success');
+            }
+            
+            clearData() {
+                const confirmModal = document.createElement('div');
+                confirmModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                confirmModal.innerHTML = `
+                    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-2">⚠️</div>
+                            <h3 class="hero-title text-xl text-charcoal mb-2">Clear All Data</h3>
+                            <p class="text-gray-600">This will permanently delete all your data, including profile information, learning progress, and settings. This action cannot be undone.</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button id="confirm-clear" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                                Clear Data
+                            </button>
+                            <button class="cancel-clear flex-1 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(confirmModal);
+                
+                confirmModal.querySelector('.cancel-clear').addEventListener('click', () => {
+                    document.body.removeChild(confirmModal);
+                });
+                
+                confirmModal.querySelector('#confirm-clear').addEventListener('click', () => {
+                    // Clear all localStorage data
+                    const keysToKeep = ['userName', 'userEmail', 'userAvatar', 'memberSince'];
+                    const allKeys = Object.keys(localStorage);
+                    
+                    allKeys.forEach(key => {
+                        if (!keysToKeep.includes(key)) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                    
+                    document.body.removeChild(confirmModal);
+                    this.showNotification('All data cleared successfully!', 'success');
+                    
+                    // Reload page to reflect changes
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                });
+                
+                confirmModal.addEventListener('click', (e) => {
+                    if (e.target === confirmModal) {
+                        document.body.removeChild(confirmModal);
+                    }
+                });
+            }
+            
+            showNotification(message, type = 'info') {
+                if (window.zamEduVoice && window.zamEduVoice.showNotification) {
+                    window.zamEduVoice.showNotification(message, type);
+                }
+            }
+        }
+        
+        // Initialize profile interface when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.profileInterface = new ProfileInterface();
+        });
+    </script>
+</body>
+</html>
