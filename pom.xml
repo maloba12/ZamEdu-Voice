@@ -69,24 +69,27 @@
             <version>8.0.33</version>
         </dependency>
 
-        <!-- Voice Recognition -->
+        <!-- Voice Recognition (Optional - for voice features) -->
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-speech</artifactId>
-            <version>3.11.0</version>
+            <version>4.0.0</version>
+            <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-texttospeech</artifactId>
             <version>2.28.0</version>
+            <optional>true</optional>
         </dependency>
 
-        <!-- Biometric Authentication -->
+        <!-- Biometric Authentication (Optional) -->
         <dependency>
             <groupId>com.machinezoo.fingerprintio</groupId>
             <artifactId>fingerprintio</artifactId>
             <version>1.0.0</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- JSON Processing -->
@@ -99,6 +102,32 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Testing -->
@@ -120,6 +149,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.zamedu.ZamEduVoiceApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

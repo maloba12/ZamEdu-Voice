@@ -1,5 +1,6 @@
 package com.zamedu.controller;
 
+import com.zamedu.entity.User;
 import com.zamedu.model.*;
 import com.zamedu.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class ZamEduController {
 
     // Language and Speech Endpoints
     @GetMapping("/languages")
-    public ResponseEntity<List<Language>> getSupportedLanguages() {
+    public ResponseEntity<List<User.Language>> getSupportedLanguages() {
         return languageService.getSupportedLanguages();
     }
     

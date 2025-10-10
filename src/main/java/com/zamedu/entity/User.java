@@ -1,10 +1,12 @@
 package com.zamedu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -83,11 +85,38 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive = true;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<LearningProgress> learningProgress;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Achievement> achievements;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ChatMessage> sentMessages;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ChatMessage> receivedMessages;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<FriendRequest> sentFriendRequests;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<FriendRequest> receivedFriendRequests;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+        name = "user_friends",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> friends = new HashSet<>();
     
     // Constructors
     public User() {
@@ -198,6 +227,21 @@ public class User {
     
     public Set<Achievement> getAchievements() { return achievements; }
     public void setAchievements(Set<Achievement> achievements) { this.achievements = achievements; }
+    
+    public Set<ChatMessage> getSentMessages() { return sentMessages; }
+    public void setSentMessages(Set<ChatMessage> sentMessages) { this.sentMessages = sentMessages; }
+    
+    public Set<ChatMessage> getReceivedMessages() { return receivedMessages; }
+    public void setReceivedMessages(Set<ChatMessage> receivedMessages) { this.receivedMessages = receivedMessages; }
+    
+    public Set<FriendRequest> getSentFriendRequests() { return sentFriendRequests; }
+    public void setSentFriendRequests(Set<FriendRequest> sentFriendRequests) { this.sentFriendRequests = sentFriendRequests; }
+    
+    public Set<FriendRequest> getReceivedFriendRequests() { return receivedFriendRequests; }
+    public void setReceivedFriendRequests(Set<FriendRequest> receivedFriendRequests) { this.receivedFriendRequests = receivedFriendRequests; }
+    
+    public Set<User> getFriends() { return friends; }
+    public void setFriends(Set<User> friends) { this.friends = friends; }
     
     // Utility methods
     public void updateLastLogin() {
